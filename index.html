@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>stdout || die trying</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: #e8dfd6;
+      background: #021b21;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #032c36;
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.5rem; color: #f2f1b9; }
+    header p  { color: #beb090; font-size: 0.9rem; }
+
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #8a7a63;
+      margin-bottom: 1rem;
+    }
+
+    .about p { color: #e8dfd6; }
+
+    .post-list { list-style: none; }
+    .post-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #032c36;
+    }
+    .post-list li:first-child { border-top: 1px solid #032c36; }
+
+    .post-list a { color: #7cbf9e; text-decoration: none; }
+    .post-list a:hover { color: #a2d9b1; }
+
+    .post-date {
+      font-size: 0.85rem;
+      color: #8a7a63;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>stdout || die trying</h1>
+    <p>software enthusiast.</p>
+  </header>
+
+  <section class="about">
+    <h2>About</h2>
+    <p>I take things apart and try to put them back together again</p>
+  </section>
+
+  <section class="posts">
+    <h2>Posts</h2>
+   <!--  <ul class="post-list">
+      <li>
+        <a href="#">Post title</a>
+        <span class="post-date"></span> 
+      </li>
+    </ul> -->
+  </section>
+</body>
+</html>
