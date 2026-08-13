@@ -19,12 +19,20 @@
       line-height: 1.6;
       color: #e4ddd2;
       background: #1a1613;
-      max-width: 680px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 3rem 1.5rem;
     }
 
+    .page {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      column-gap: 2.5rem;
+    }
+
     header {
+      grid-column: 2;
+      grid-row: 1;
       margin-bottom: 3rem;
       border-bottom: 1px solid #2c261e;
       padding-bottom: 1.5rem;
@@ -42,6 +50,16 @@
       letter-spacing: 0.1em;
       color: #8a7a63;
       margin-bottom: 1rem;
+    }
+
+    .sidebar {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    main {
+      grid-column: 2;
+      grid-row: 2;
     }
 
     .post-list { list-style: none; }
@@ -63,19 +81,42 @@
       color: #8a7a63;
       white-space: nowrap;
     }
+
+    .sidebar .post-list li { display: block; border-bottom: none; padding: 0.35rem 0; }
+    .sidebar .post-list li:first-child { border-top: none; }
+
+    @media (max-width: 640px) {
+      .page { grid-template-columns: 1fr; }
+      header, .sidebar, main { grid-column: 1; grid-row: auto; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>stdout || die trying</h1>
-    <p>kegan - red teamer</p>
-    <p class="bio">I take things apart and try to put them back together again</p>
-  </header>
+  <div class="page">
+    <header>
+      <h1>stdout || die trying</h1>
+      <p>kegan - red teamer</p>
+      <p class="bio">I take things apart and try to put them back together again</p>
+    </header>
 
-  <section class="posts">
-    <h2>Posts</h2>
-    <ul class="post-list">
-      <!-- POSTS:START -->
+    <!-- TOOLS:START -->
+    <aside class="sidebar">
+      <section class="tools">
+        <h2>Tools</h2>
+        <ul class="post-list">
+          <li>
+            <a href="tools/alternate.html">Alternate IPs</a>
+          </li>
+        </ul>
+      </section>
+    </aside>
+    <!-- TOOLS:END -->
+
+    <main>
+      <section class="posts">
+        <h2>Posts</h2>
+        <ul class="post-list">
+          <!-- POSTS:START -->
       <li>
         <a href="posts/2026-08-12-finding-expensive-assumptions.html">Finding Expensive Assumptions</a>
         <span class="post-date">2026-08-12</span>
@@ -85,7 +126,9 @@
         <span class="post-date">2026-08-11</span>
       </li>
       <!-- POSTS:END -->
-    </ul>
-  </section>
+        </ul>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

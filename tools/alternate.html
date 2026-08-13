@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alternate IPs - stdout || die trying</title>
+  <meta name="description" content="Generate dword, octal, and hex variants of a URL.">
+  <link rel="canonical" href="https://kegn.info/tools/alternate.html">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: #e4ddd2;
+      background: #1a1613;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #2c261e;
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.5rem; color: #f2f1b9; }
+    header p  { color: #d16b5e; font-size: 0.9rem; }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #7cbf9e;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { color: #a2d9b1; }
+
+    .credit {
+      color: #8a7a63;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    .credit a { color: #7cbf9e; }
+    .credit a:hover { color: #a2d9b1; }
+
+    article h1 {
+      font-size: 1.6rem;
+      color: #d16b5e;
+      margin-bottom: 0.5rem;
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 1.25rem;
+      background: #211c17;
+      border: 1px solid #2c261e;
+      border-radius: 6px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8a7a63;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: #1a1613;
+      border: 1px solid #2c261e;
+      border-radius: 4px;
+      padding: 0.6rem 0.7rem;
+      color: #e4ddd2;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #d16b5e;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button {
+      background: #d16b5e;
+      color: #1a1613;
+      border: none;
+      border-radius: 4px;
+      padding: 0.65rem 1.2rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #dd8375; }
+    button:disabled { background: #6b5449; cursor: not-allowed; }
+
+    button.secondary {
+      background: transparent;
+      color: #7cbf9e;
+      border: 1px solid #2c261e;
+      font-weight: 400;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+    }
+    button.secondary:hover { border-color: #7cbf9e; }
+
+    #status {
+      font-size: 0.85rem;
+      color: #8a7a63;
+      min-height: 1.2em;
+    }
+    #status.error { color: #d16b5e; }
+
+    .variants { list-style: none; }
+    .variants li {
+      border-bottom: 1px solid #2c261e;
+      padding: 0.9rem 0;
+    }
+    .variants li:first-child { border-top: 1px solid #2c261e; }
+
+    .variant-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8a7a63;
+      margin-bottom: 0.4rem;
+    }
+
+    .variant-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .variant-url {
+      flex: 1;
+      word-break: break-all;
+      background: #2c261e;
+      color: #e4ddd2;
+      padding: 0.5rem 0.6rem;
+      border-radius: 3px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>stdout || die trying</h1>
+    <p>red teamer</p>
+  </header>
+
+  <a class="back" href="../index.html">&larr; back</a>
+
+  <article>
+    <h1>Alternate IPs</h1>
+    <p class="credit">Techniques from <a href="https://web.archive.org/web/20240118013823/http://www.pc-help.org/obscure.htm">"How to Obscure Any URL"</a> (pc-help.org, via Wayback Machine).</p>
+
+    <form id="ip-form">
+      <div>
+        <label for="target">IP address</label>
+        <input type="text" id="target" placeholder="192.168.0.1" autocomplete="off">
+      </div>
+      <div class="row">
+        <button type="submit">Generate</button>
+        <span id="status"></span>
+      </div>
+    </form>
+
+    <ul class="variants" id="output"></ul>
+  </article>
+
+  <script>
+    function ipToInt(ip) {
+      const parts = ip.split('.');
+      if (parts.length !== 4) return null;
+      const nums = parts.map(Number);
+      if (nums.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+      return ((nums[0] << 24) | (nums[1] << 16) | (nums[2] << 8) | nums[3]) >>> 0;
+    }
+
+    function octets(n) {
+      return [(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff];
+    }
+
+    function toDword(n) {
+      return String(n);
+    }
+
+    function toOctal(n) {
+      return octets(n).map((o) => '0' + o.toString(8)).join('.');
+    }
+
+    function toHexDotted(n) {
+      return octets(n).map((o) => '0x' + o.toString(16).toUpperCase().padStart(2, '0')).join('.');
+    }
+
+    function toHexSingle(n) {
+      return '0x' + n.toString(16).toUpperCase().padStart(8, '0');
+    }
+
+    function formatOctet(o, fmt) {
+      if (fmt === 'hex') return '0x' + o.toString(16).toUpperCase().padStart(2, '0');
+      if (fmt === 'oct') return '0' + o.toString(8);
+      return String(o);
+    }
+
+    const MIXED_PATTERNS = [
+      ['hex', 'dec', 'oct', 'hex'],
+      ['dec', 'oct', 'hex', 'dec'],
+      ['oct', 'hex', 'dec', 'oct'],
+      ['hex', 'oct', 'dec', 'hex'],
+      ['dec', 'hex', 'oct', 'dec'],
+      ['oct', 'dec', 'hex', 'oct'],
+    ];
+
+    function toMixed(n, pattern) {
+      const os = octets(n);
+      return pattern.map((fmt, i) => formatOctet(os[i], fmt)).join('.');
+    }
+
+    function buildUrl(host) {
+      return 'http://' + host;
+    }
+
+    function renderVariants(ip) {
+      const n = ipToInt(ip);
+
+      const variants = [
+        ['Dotted-decimal', buildUrl(ip)],
+        ['Dword', buildUrl(toDword(n))],
+        ['Octal', buildUrl(toOctal(n))],
+        ['Hex (dotted)', buildUrl(toHexDotted(n))],
+        ['Hex (single number)', buildUrl(toHexSingle(n))],
+      ];
+
+      for (const pattern of MIXED_PATTERNS) {
+        variants.push(['Mixed (' + pattern.join('.') + ')', buildUrl(toMixed(n, pattern))]);
+      }
+
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+      for (const [label, url] of variants) {
+        const li = document.createElement('li');
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'variant-label';
+        labelEl.textContent = label;
+
+        const row = document.createElement('div');
+        row.className = 'variant-row';
+
+        const urlEl = document.createElement('code');
+        urlEl.className = 'variant-url';
+        urlEl.textContent = url;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'secondary';
+        copyBtn.textContent = 'copy';
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(url);
+          copyBtn.textContent = 'copied';
+          setTimeout(() => { copyBtn.textContent = 'copy'; }, 1200);
+        });
+
+        row.appendChild(urlEl);
+        row.appendChild(copyBtn);
+        li.appendChild(labelEl);
+        li.appendChild(row);
+        output.appendChild(li);
+      }
+    }
+
+    document.getElementById('ip-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const target = document.getElementById('target').value.trim();
+      const status = document.getElementById('status');
+
+      if (ipToInt(target) === null) {
+        status.textContent = 'Enter a valid IP address (e.g. 192.168.0.1).';
+        status.className = 'error';
+        document.getElementById('output').innerHTML = '';
+        return;
+      }
+
+      status.className = '';
+      status.textContent = '';
+      renderVariants(target);
+    });
+  </script>
+</body>
+</html>
