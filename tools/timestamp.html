@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timestamp - stdout || die trying</title>
+  <link rel="icon" href="/favicon.ico">
+  <meta name="description" content="Convert Unix timestamps to and from human-readable dates.">
+  <link rel="canonical" href="https://kegn.info/tools/timestamp.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Timestamp">
+  <meta property="og:description" content="Convert Unix timestamps to and from human-readable dates.">
+  <meta property="og:url" content="https://kegn.info/tools/timestamp.html">
+  <meta name="twitter:card" content="summary">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: #e4ddd2;
+      background: #1a1613;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #2c261e;
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.5rem; color: #f2f1b9; }
+    header p  { color: #d16b5e; font-size: 0.9rem; }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #7cbf9e;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { color: #a2d9b1; }
+
+    article h1 {
+      font-size: 1.6rem;
+      color: #d16b5e;
+      margin-bottom: 1.5rem;
+    }
+
+    .field {
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      background: #211c17;
+      border: 1px solid #2c261e;
+      border-radius: 6px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8a7a63;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"], input[type="datetime-local"], select {
+      width: 100%;
+      background: #1a1613;
+      border: 1px solid #2c261e;
+      border-radius: 4px;
+      padding: 0.6rem 0.7rem;
+      color: #e4ddd2;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #d16b5e;
+    }
+
+    .date-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    button {
+      background: transparent;
+      color: #7cbf9e;
+      border: 1px solid #2c261e;
+      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button:hover { border-color: #7cbf9e; }
+
+    .result { font-size: 0.9rem; color: #e4ddd2; }
+    .result .error { color: #d16b5e; }
+
+    .zones { list-style: none; }
+    .zones li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #2c261e;
+      font-size: 0.9rem;
+    }
+    .zones li:first-child { border-top: 1px solid #2c261e; }
+
+    .zone-label { color: #8a7a63; white-space: nowrap; }
+    .zone-value {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #e4ddd2;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>stdout || die trying</h1>
+    <p>red teamer</p>
+  </header>
+
+  <a class="back" href="../index.html">&larr; back</a>
+
+  <article>
+    <h1>Timestamp</h1>
+
+    <div class="field">
+      <label for="epoch">Unix timestamp (seconds or ms)</label>
+      <input type="text" id="epoch" placeholder="0000000000">
+      <div class="row">
+        <button id="now">now</button>
+      </div>
+      <div class="result" id="epoch-result"></div>
+    </div>
+
+    <div class="field">
+      <label for="date">Date and time (pick the timezone it's in)</label>
+      <div class="date-row">
+        <input type="datetime-local" id="date" step="1">
+        <select id="date-tz"></select>
+      </div>
+      <div class="result" id="date-result"></div>
+    </div>
+
+    <ul class="zones" id="zones"></ul>
+  </article>
+
+  <script>
+    const ZONES = [
+      ['UTC', 'UTC'],
+      ['GMT', 'Etc/GMT'],
+      ['New York (ET)', 'America/New_York'],
+      ['Chicago (CT)', 'America/Chicago'],
+      ['Denver (MT)', 'America/Denver'],
+      ['Los Angeles (PT)', 'America/Los_Angeles'],
+      ['This device', null],
+    ];
+
+    const epochInput = document.getElementById('epoch');
+    const dateInput = document.getElementById('date');
+    const dateTzSelect = document.getElementById('date-tz');
+    const epochResult = document.getElementById('epoch-result');
+    const dateResult = document.getElementById('date-result');
+    const zonesList = document.getElementById('zones');
+
+    for (const [label, tz] of ZONES) {
+      const opt = document.createElement('option');
+      opt.value = tz || '';
+      opt.textContent = label;
+      dateTzSelect.appendChild(opt);
+    }
+    dateTzSelect.value = 'UTC';
+
+    function formatZone(date, tz) {
+      const opts = {
+        hour12: false, timeZoneName: 'short',
+        year: 'numeric', month: 'short', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      };
+      if (tz) opts.timeZone = tz;
+      return new Intl.DateTimeFormat('en-US', opts).format(date);
+    }
+
+    // Offset (ms) of `timeZone`'s wall-clock time from UTC, at the instant `date` represents.
+    function tzOffsetMs(date, timeZone) {
+      const opts = {
+        hour12: false, timeZone,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      };
+      const parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(date)
+        .reduce((acc, p) => { if (p.type !== 'literal') acc[p.type] = p.value; return acc; }, {});
+      const hour = parts.hour === '24' ? '00' : parts.hour;
+      const asUtc = Date.UTC(parts.year, parts.month - 1, parts.day, hour, parts.minute, parts.second);
+      return asUtc - date.getTime();
+    }
+
+    // Convert a "wall clock" datetime-local string, understood as being in `timeZone`, to a real UTC epoch (ms).
+    function zonedTimeToUtcMs(dateTimeLocalStr, timeZone) {
+      if (!timeZone) return new Date(dateTimeLocalStr).getTime();
+      const naiveUtcMs = new Date(dateTimeLocalStr + 'Z').getTime();
+      const offset = tzOffsetMs(new Date(naiveUtcMs), timeZone);
+      return naiveUtcMs - offset;
+    }
+
+    function renderZones(date) {
+      zonesList.innerHTML = '';
+      for (const [label, tz] of ZONES) {
+        const li = document.createElement('li');
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'zone-label';
+        labelEl.textContent = label;
+
+        const valueEl = document.createElement('span');
+        valueEl.className = 'zone-value';
+        valueEl.textContent = formatZone(date, tz);
+
+        li.appendChild(labelEl);
+        li.appendChild(valueEl);
+        zonesList.appendChild(li);
+      }
+    }
+
+    function fromEpoch() {
+      const raw = epochInput.value.trim();
+      if (!raw) { epochResult.innerHTML = ''; zonesList.innerHTML = ''; return; }
+      const n = Number(raw);
+      if (!Number.isFinite(n)) { epochResult.innerHTML = '<span class="error">not a number</span>'; return; }
+      const ms = Math.abs(n) > 1e12 ? n : n * 1000;
+      const d = new Date(ms);
+      if (isNaN(d.getTime())) { epochResult.innerHTML = '<span class="error">invalid</span>'; return; }
+      epochResult.textContent = '';
+      renderZones(d);
+    }
+
+    function fromDate() {
+      const raw = dateInput.value;
+      if (!raw) { dateResult.innerHTML = ''; zonesList.innerHTML = ''; return; }
+      const ms = zonedTimeToUtcMs(raw, dateTzSelect.value);
+      if (isNaN(ms)) { dateResult.innerHTML = '<span class="error">invalid</span>'; return; }
+      const d = new Date(ms);
+      dateResult.textContent = Math.floor(ms / 1000) + ' (' + ms + ' ms)';
+      renderZones(d);
+    }
+
+    document.getElementById('now').addEventListener('click', () => {
+      epochInput.value = Math.floor(Date.now() / 1000);
+      fromEpoch();
+    });
+
+    epochInput.addEventListener('input', fromEpoch);
+    dateInput.addEventListener('input', fromDate);
+    dateTzSelect.addEventListener('change', fromDate);
+  </script>
+</body>
+</html>
