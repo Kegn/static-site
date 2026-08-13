@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finding Expensive Assumptions — stdout || die trying</title>
+  <meta name="description" content="Your organization has thousands of security assumptions, and most of them are not worth your time.">
+  <link rel="canonical" href="https://kegn.info/posts/2026-08-12-finding-expensive-assumptions.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Finding Expensive Assumptions">
+  <meta property="og:description" content="Your organization has thousands of security assumptions, and most of them are not worth your time.">
+  <meta property="og:url" content="https://kegn.info/posts/2026-08-12-finding-expensive-assumptions.html">
+  <meta property="article:published_time" content="2026-08-12">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Finding Expensive Assumptions">
+  <meta name="twitter:description" content="Your organization has thousands of security assumptions, and most of them are not worth your time.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: #e4ddd2;
+      background: #1a1613;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #2c261e;
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.5rem; color: #f2f1b9; }
+    header p  { color: #d16b5e; font-size: 0.9rem; }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #7cbf9e;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { color: #a2d9b1; }
+
+    article h1 {
+      font-size: 1.6rem;
+      color: #d16b5e;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-meta {
+      color: #8a7a63;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    article h2 {
+      font-size: 1.1rem;
+      color: #beb090;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    article p { color: #e4ddd2; margin-bottom: 1rem; }
+    article strong { color: #d16b5e; }
+    article ul, article ol { color: #e4ddd2; margin: 0 0 1rem 1.5rem; }
+    article li { margin-bottom: 0.25rem; }
+    article code {
+      background: #2c261e;
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    article pre {
+      background: #2c261e;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+    article pre code { background: none; padding: 0; }
+    article a { color: #7cbf9e; }
+    article a:hover { color: #a2d9b1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>stdout || die trying</h1>
+    <p>red teamer</p>
+  </header>
+
+  <a class="back" href="../index.html">&larr; back</a>
+
+  <article>
+    <h1>Finding Expensive Assumptions</h1>
+    <p class="post-meta">2026-08-12 &middot; Kegan</p>
+
+    <p>Your organization has thousands of security assumptions, and most of them are not worth your time.</p>
+    <h2>One Sentence of Impact</h2>
+    <p>What is the one sentence you can say that would causes a change in the organization's direction? Time is scarce. Consider how your operation is shaping the security of the organization. What assumption are you breaking?</p>
+    <ul>
+      <li>"Compromising a standard employee laptop cannot lead to a compromise of our production database."</li>
+    </ul>
+    <p>If disproven, this can begin conversations that result in significant architecural changes, identity controls, and segmentation.</p>
+    <ul>
+      <li>"Our aquistions do not result in meaningful changes to the parent company's attack surface."</li>
+    </ul>
+    <p>If disproven, this can change the aquistion and onboarding pipeline</p>
+    <h2>Expensive Assumptions are Expensive Risks</h2>
+    <p>How many valuable items are at risk due to an assumption?</p>
+    <p>Consider the recent <a href="https://decrypt.co/374817/coldcard-bitcoin-exploit-88-million-attackers-draining-wallets">Coldcard Attack</a>. 1367 bitcoin gone. With bitcoin currently valued at $63,000 this is a loss of over $80M. The assumption was that the device had suffient randomness when generating seed phrases. This assumption led to a catatrophic failure. Users never exposed their keys; they were not phished. The attacker was able to regenerate seed phrases based on timings and a device ID due to a weakness in how the phrases were generated.</p>
+    <h2>Conclusion</h2>
+    <p>Not all assumptions carry significant risk, but some do. <strong>How many dominoes fall based on a single assumption?</strong></p>
+  </article>
+</body>
+</html>
