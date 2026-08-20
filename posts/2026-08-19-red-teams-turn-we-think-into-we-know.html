@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Teams Turn We Think into We Know — stdout || die trying</title>
+  <link rel="icon" href="/favicon.ico">
+  <meta name="description" content="Security teams make decisions with incomplete information. Red Teams make that information less incomplete.">
+  <link rel="canonical" href="https://kegn.info/posts/2026-08-19-red-teams-turn-we-think-into-we-know.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Red Teams Turn We Think into We Know">
+  <meta property="og:description" content="Security teams make decisions with incomplete information. Red Teams make that information less incomplete.">
+  <meta property="og:url" content="https://kegn.info/posts/2026-08-19-red-teams-turn-we-think-into-we-know.html">
+  <meta property="article:published_time" content="2026-08-19">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Red Teams Turn We Think into We Know">
+  <meta name="twitter:description" content="Security teams make decisions with incomplete information. Red Teams make that information less incomplete.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: #e4ddd2;
+      background: #1a1613;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #2c261e;
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 { font-size: 1.5rem; color: #f2f1b9; }
+    header p  { color: #d16b5e; font-size: 0.9rem; }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #7cbf9e;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { color: #a2d9b1; }
+
+    article h1 {
+      font-size: 1.6rem;
+      color: #d16b5e;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-meta {
+      color: #8a7a63;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    article h2 {
+      font-size: 1.1rem;
+      color: #beb090;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    article p { color: #e4ddd2; margin-bottom: 1rem; }
+    article strong { color: #d16b5e; }
+    article ul, article ol { color: #e4ddd2; margin: 0 0 1rem 1.5rem; }
+    article li { margin-bottom: 0.25rem; }
+    article code {
+      background: #2c261e;
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    article pre {
+      background: #2c261e;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+    article pre code { background: none; padding: 0; }
+    article a { color: #7cbf9e; }
+    article a:hover { color: #a2d9b1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>stdout || die trying</h1>
+    <p>thoughts on red teaming</p>
+  </header>
+
+  <a class="back" href="../index.html">&larr; back</a>
+
+  <article>
+    <h1>Red Teams Turn We Think into We Know</h1>
+    <p class="post-meta">2026-08-19 &middot; Kegan</p>
+
+    <p>Security teams make decisions with incomplete information. Red Teams make that information less incomplete.</p>
+    <h2>Will This Control Actually Stop an Attacker?</h2>
+    <p>"MFA will stop an attacker from accessing this service."</p>
+    <p>What if an adversary took the service account token?</p>
+    <p>Consider all angles for a particular attack. Proper authorization may be the only assumed way to access a particular service, but what about the quality-of-life improvements created along the way by engineers? Shadow IT exists mainly because of the need to fill the vacuum that exists due to unclear, inaccessible, or inconvenient policies and procedures.</p>
+    <h2>Expectations at Time of Encounter</h2>
+    <p>Controls should not be evaluated strictly based on deployment. They are evaluated when an attacker encounters them. Just because the canonical case is accounted for, does not mean that every case has been considered.</p>
+    <p>"The good guys have to be right all the time, but the bad guys only have to be right once."</p>
+    <h2>Gather the Complete Picture</h2>
+    <p>A group of engineers may find the path of least resistance. Ensure your architecture allows the most secure to be the easiest, else there will be weird edgecases that allow entry into the castle. Often times, the most secure way is not the most convenient. Red Teams can help shape the way organizations think about ease and convenience by illuminating where the deviations occur. <strong>Red Teams help organizations understand where security and convenience are working against each other.</strong></p>
+  </article>
+</body>
+</html>
